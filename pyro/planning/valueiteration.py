@@ -687,7 +687,7 @@ class ValueIteration_ND:
             # print('J shape on compute : ', self.J.shape)
 
             # call function for random shape
-            print('get interpolation for 3 dims')
+            # print('get interpolation for 3 dims')
             J_interpol = rgi([self.grid_sys.xd[0], self.grid_sys.xd[1], self.grid_sys.xd[2]], self.J)
             # print('J_interpol', J_interpol)
         else:
@@ -719,7 +719,7 @@ class ValueIteration_ND:
 
                 else:
 
-                    x_next = self.sys.f(x, u) * self.dt + x
+                    x_next = self.sys.f(x, u) * self.grid_sys.dt + x
                     x_ok = self.sys.isavalidstate(x_next)
                     u_ok = self.sys.isavalidinput(x, u)
                     action_isok = (u_ok & x_ok)
@@ -823,8 +823,6 @@ class ValueIteration_ND:
 
         u = np.zeros(self.sys.m)
 
-        print('x', x)
-
         # for all inputs
         for k in range(self.sys.m):
             if self.n_dim == 2:
@@ -835,22 +833,93 @@ class ValueIteration_ND:
         return u
 
     ################################
-    def compute_steps(self, l=50, plot=False, threshold=1.0e-25):
+    def compute_steps(self, l=50, plot=False, threshold=1.0e-25, maxJ=1000):
         """ compute number of step """
         step = 0
         print('Step:', step)
         cur_threshold = self.compute_step()
         print('Current threshold', cur_threshold)
+        self.plot_dynamic_cost2go(maxJ)
         # while abs(cur_threshold) > threshold:
         while step < l:
             step = step + 1
             print('Step:', step)
             cur_threshold = self.compute_step()
             print('Current threshold', cur_threshold)
+            self.draw_cost2go(maxJ)
+
+    ################################
+    def plot_dynamic_cost2go(self, maxJ=1000):
+        """ print graphic """
+
+        plt.ion()
+
+        xname = self.sys.state_label[0] + ' ' + self.sys.state_units[0]
+        yname = self.sys.state_label[1] + ' ' + self.sys.state_units[1]
+
+        self.fig_dynamic = plt.figure(figsize=(4, 4), dpi=300, frameon=True)
+        self.fig_dynamic.canvas.set_window_title('Dynamic Cost-to-go')
+        self.ax1_dynamic = self.fig_dynamic.add_subplot(1, 1, 1)
+
+        plt.ylabel(yname, fontsize=self.fontsize)
+        plt.xlabel(xname, fontsize=self.fontsize)
+
+        plt.axis([self.sys.x_lb[0],
+                  self.sys.x_ub[0],
+                  self.sys.x_lb[1],
+                  self.sys.x_ub[1]])
+
+        self.Jplot = self.J.copy()
+        self.create_Jplot(maxJ)
+        # print(np.shape(self.Jplot), np.shape(self.Jplot[..., 0]))
+        plot = self.Jplot.T if self.n_dim == 2 else self.Jplot[..., 0].T
+        # print(np.shape(plot))
+        self.im1_dynamic = plt.pcolormesh(self.grid_sys.xd[0],
+                                  self.grid_sys.xd[1],
+                                  plot,
+                                  shading='gouraud')
+
+        plt.colorbar()
+        plt.grid(True)
+        plt.tight_layout()
+
+        plt.draw()
+        plt.pause(0.1)
+
+    #############################
+    def draw_cost2go(self, maxJ=1000):
+        self.Jplot = self.J.copy()
+        self.create_Jplot(maxJ)
+        plot = self.Jplot.T if self.n_dim == 2 else self.Jplot.T[0]
+        self.im1_dynamic.set_array(np.ravel(plot))
+        plt.draw()
+        plt.pause(0.1)
+
+    ################################
+    def create_Jplot(self, maxJ=1000):
+        ## Saturation function for cost
+        if self.n_dim == 2:
+            for i in range(self.grid_sys.xgriddim[0]):
+                for j in range(self.grid_sys.xgriddim[1]):
+                    # print(self.J[i, j], maxJ)
+                    if self.J[i, j] >= maxJ:
+                        self.Jplot[i, j] = maxJ
+                    else:
+                        self.Jplot[i, j] = self.J[i, j]
+        elif self.n_dim == 3:
+            for i in range(self.grid_sys.xgriddim[0]):
+                for j in range(self.grid_sys.xgriddim[1]):
+                    for k in range(len(self.J[i, j])):
+                        if self.J[i, j, k] >= maxJ:
+                            self.Jplot[i, j, k] = maxJ
+                        else:
+                            self.Jplot[i, j, k] = self.J[i, j, k]
 
     ################################
     def plot_cost2go(self, maxJ=1000):
         """ print graphic """
+
+        plt.ion()
 
         xname = self.sys.state_label[0] + ' ' + self.sys.state_units[0]
         yname = self.sys.state_label[1] + ' ' + self.sys.state_units[1]
@@ -858,12 +927,22 @@ class ValueIteration_ND:
         self.Jplot = self.J.copy()
 
         ## Saturation function for cost
-        for i in range(self.grid_sys.xgriddim[0]):
-            for j in range(self.grid_sys.xgriddim[1]):
-                if self.J[i, j] >= maxJ:
-                    self.Jplot[i, j] = maxJ
-                else:
-                    self.Jplot[i, j] = self.J[i, j]
+        if self.n_dim == 2:
+            for i in range(self.grid_sys.xgriddim[0]):
+                for j in range(self.grid_sys.xgriddim[1]):
+                    print(self.J[i, j], maxJ)
+                    if self.J[i, j] >= maxJ:
+                        self.Jplot[i, j] = maxJ
+                    else:
+                        self.Jplot[i, j] = self.J[i, j]
+        elif self.n_dim == 3:
+            for i in range(self.grid_sys.xgriddim[0]):
+                for j in range(self.grid_sys.xgriddim[1]):
+                    for k in range(len(self.J[i,j])):
+                        if self.J[i, j, k] >= maxJ:
+                            self.Jplot[i, j, k] = maxJ
+                        else:
+                            self.Jplot[i, j, k] = self.J[i, j, k]
 
         self.fig1 = plt.figure(figsize=(4, 4), dpi=300, frameon=True)
         self.fig1.canvas.set_window_title('Cost-to-go')
@@ -871,9 +950,11 @@ class ValueIteration_ND:
 
         plt.ylabel(yname, fontsize=self.fontsize)
         plt.xlabel(xname, fontsize=self.fontsize)
+        plot = self.Jplot.T if self.n_dim == 2 else self.Jplot.T[0]
+        print(self.Jplot.T, np.size(self.Jplot.T))
         self.im1 = plt.pcolormesh(self.grid_sys.xd[0],
                                   self.grid_sys.xd[1],
-                                  self.Jplot.T,
+                                  plot,
                                   shading='gouraud')
 
         plt.axis([self.sys.x_lb[0],
@@ -886,11 +967,13 @@ class ValueIteration_ND:
         plt.tight_layout()
 
         plt.draw()
-        plt.show()
+        plt.pause(0.001)
 
     ################################
     def plot_policy(self, i=0):
         """ print graphic """
+
+        plt.ion()
 
         xname = self.sys.state_label[0] + ' ' + self.sys.state_units[0]
         yname = self.sys.state_label[1] + ' ' + self.sys.state_units[1]
@@ -901,11 +984,12 @@ class ValueIteration_ND:
         self.fig1.canvas.set_window_title('Policy for u[%i]' % i)
         self.ax1 = self.fig1.add_subplot(1, 1, 1)
 
+        plot = policy_plot.T if self.n_dim == 2 else policy_plot.T[0]
         plt.ylabel(yname, fontsize=self.fontsize)
         plt.xlabel(xname, fontsize=self.fontsize)
         self.im1 = plt.pcolormesh(self.grid_sys.xd[0],
                                   self.grid_sys.xd[1],
-                                  policy_plot.T,
+                                  plot,
                                   shading='gouraud')
 
         plt.axis([self.sys.x_lb[0],
@@ -918,6 +1002,7 @@ class ValueIteration_ND:
         plt.tight_layout()
 
         plt.draw()
+        plt.pause(0.001)
 
         ################################
 

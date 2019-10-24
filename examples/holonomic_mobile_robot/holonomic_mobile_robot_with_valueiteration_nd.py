@@ -30,14 +30,13 @@ cf.INF = 1E9
 vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 
 vi.initialize()
-vi.load_data('holonomic_vi')
-# vi.compute_steps(500)
-vi.plot_cost2go(40000)
+# vi.load_data('holonomic_vi')
+vi.compute_steps(500, maxJ=4000)
+vi.plot_cost2go(4000)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_policy(1)
-vi.plot_cost2go()
-vi.save_data('holonomic_vi')
+# vi.save_data('holonomic_vi')
 
 # Closed loop
 cl_sys = vi.ctl + sys
@@ -46,4 +45,4 @@ cl_sys = vi.ctl + sys
 x0   = [9,0]
 sim = cl_sys.compute_trajectory(x0 , tf=20)
 cl_sys.plot_trajectory(sim, 'xu')
-cl_sys.animate_simulation(sim, save=True, file_name='holonomic')
+cl_sys.animate_simulation(sim, save=False, file_name='holonomic')
