@@ -37,7 +37,7 @@ vi.compute_steps(200)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_cost2go()
-# vi.save_data('simple_pendulum_vi')
+vi.save_data('simple_pendulum_vi')
 
 #asign controller
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )

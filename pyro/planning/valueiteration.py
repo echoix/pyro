@@ -926,23 +926,7 @@ class ValueIteration_ND:
 
         self.Jplot = self.J.copy()
 
-        ## Saturation function for cost
-        if self.n_dim == 2:
-            for i in range(self.grid_sys.xgriddim[0]):
-                for j in range(self.grid_sys.xgriddim[1]):
-                    print(self.J[i, j], maxJ)
-                    if self.J[i, j] >= maxJ:
-                        self.Jplot[i, j] = maxJ
-                    else:
-                        self.Jplot[i, j] = self.J[i, j]
-        elif self.n_dim == 3:
-            for i in range(self.grid_sys.xgriddim[0]):
-                for j in range(self.grid_sys.xgriddim[1]):
-                    for k in range(len(self.J[i,j])):
-                        if self.J[i, j, k] >= maxJ:
-                            self.Jplot[i, j, k] = maxJ
-                        else:
-                            self.Jplot[i, j, k] = self.J[i, j, k]
+        self.create_Jplot(maxJ)
 
         self.fig1 = plt.figure(figsize=(4, 4), dpi=300, frameon=True)
         self.fig1.canvas.set_window_title('Cost-to-go')
@@ -950,8 +934,8 @@ class ValueIteration_ND:
 
         plt.ylabel(yname, fontsize=self.fontsize)
         plt.xlabel(xname, fontsize=self.fontsize)
-        plot = self.Jplot.T if self.n_dim == 2 else self.Jplot.T[0]
-        print(self.Jplot.T, np.size(self.Jplot.T))
+        plot = self.Jplot.T if self.n_dim == 2 else self.Jplot[..., 0].T
+        # print(self.Jplot.T, np.size(self.Jplot.T))
         self.im1 = plt.pcolormesh(self.grid_sys.xd[0],
                                   self.grid_sys.xd[1],
                                   plot,
@@ -984,7 +968,7 @@ class ValueIteration_ND:
         self.fig1.canvas.set_window_title('Policy for u[%i]' % i)
         self.ax1 = self.fig1.add_subplot(1, 1, 1)
 
-        plot = policy_plot.T if self.n_dim == 2 else policy_plot.T[0]
+        plot = policy_plot.T if self.n_dim == 2 else policy_plot[..., 0].T
         plt.ylabel(yname, fontsize=self.fontsize)
         plt.xlabel(xname, fontsize=self.fontsize)
         self.im1 = plt.pcolormesh(self.grid_sys.xd[0],
