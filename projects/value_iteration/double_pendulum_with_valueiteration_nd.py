@@ -13,7 +13,7 @@ from pyro.analysis import costfunction
 from pyro.planning import valueiteration
 from pyro.control  import controller
 
-sys  = pendulum.SinglePendulum()
+sys  = pendulum.DoublePendulum()
 
 # Discrete world 
 grid_sys = discretizer.GridDynamicSystem( sys )
@@ -32,12 +32,12 @@ qcf.INF  = 10000
 vi = valueiteration.ValueIteration_ND( grid_sys , qcf )
 
 vi.initialize()
-# vi.load_data('simple_pendulum_vi')
-vi.compute_steps(200, plot=True)
+# vi.load_data('double_pendulum_vi')
+vi.compute_steps(200)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_cost2go()
-vi.save_data('simple_pendulum_vi')
+# vi.save_data('double_pendulum_vi')
 
 #asign controller
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
@@ -47,5 +47,5 @@ x0   = [0,0]
 tf   = 10
 sim = cl_sys.compute_trajectory(x0, tf, costfunc=qcf)
 cl_sys.get_plotter().plot(sim, 'xuj')
-cl_sys.get_animator().animate_simulation(sim, save=False, file_name='simple_pendulum')
+cl_sys.get_animator().animate_simulation(sim, save=False, file_name='double_pendulum')
 

@@ -42,14 +42,18 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 vi.uselookuptable = True
 vi.initialize()
 vi.load_data('parking_vi')
-vi.compute_steps(5, maxJ=5)
+vi.compute_steps(100, maxJ=20, plot=True)
 vi.save_data('parking_vi')
 
 vi.assign_interpol_controller()
 
-vi.plot_cost2go(5)
+vi.plot_cost2go(20)
 vi.plot_policy(0)
 vi.plot_policy(1)
+
+# TEST: 3D policy showing
+vi.plot_3D_policy(0)
+vi.plot_3D_policy(1)
 #
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
 #
