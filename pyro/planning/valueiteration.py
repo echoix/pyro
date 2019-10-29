@@ -667,8 +667,6 @@ class ValueIteration_ND:
 
         ################################
 
-        ################################
-
     def plot_3D_policy(self, i=0):
         """ print graphic """
 
@@ -691,10 +689,10 @@ class ValueIteration_ND:
         Z = plot[:, 2]
         self.ax1.plot_surface(X, Y, Z)
 
-       # plt.axis([self.sys.x_lb[0],
-        #          self.sys.x_ub[0],
-        #          self.sys.x_lb[1],
-        #          self.sys.x_ub[1]])
+        plt.axis([self.sys.x_lb[0],
+              self.sys.x_ub[0],
+              self.sys.x_lb[1],
+              self.sys.x_ub[1]])
 
         plt.colorbar()
 

@@ -5,15 +5,13 @@ Created on Tue Nov 13 11:05:07 2018
 @author: Alexandre
 """
 
-###############################################################################
-import controller
-import costfunction
-import discretizer
 import numpy as np
 ###############################################################################
-import valueiteration
 from pyro.dynamic import vehicle
-from pyro.planning import randomtree
+from pyro.planning import discretizer
+from pyro.analysis import costfunction
+from pyro.planning import valueiteration
+from pyro.control  import controller
 ###############################################################################
 
 sys  = vehicle.KinematicBicyleModel()
@@ -47,19 +45,19 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 
 vi.uselookuptable = True
 vi.initialize()
-vi.load_data('parking_vi')
-vi.compute_steps(100, maxJ=20, plot=True)
-vi.save_data('parking_vi')
+vi.load_data('bicycle_exp_vi')
+vi.compute_steps(100, plot=True)
+vi.save_data('bicycle_exp_vi')
 
 vi.assign_interpol_controller()
 
-vi.plot_cost2go(20)
+vi.plot_cost2go()
 vi.plot_policy(0)
 vi.plot_policy(1)
 
 # TEST: 3D policy showing
-vi.plot_3D_policy(0)
-vi.plot_3D_policy(1)
+# vi.plot_3D_policy(0)
+# vi.plot_3D_policy(1)
 #
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
 #
