@@ -30,7 +30,7 @@ sys.u_ub = np.array( [+1,+1.0] )
 sys.u_lb = np.array( [-1,-1.0] )
 
 # Discrete world
-grid_sys = discretizer.GridDynamicSystem( sys , (91, 91, 21) , (3,3) , 0.05 )
+grid_sys = discretizer.GridDynamicSystem( sys , (51, 51, 21) , (3,3) , 0.05 )
 # Cost Function
 cf = costfunction.QuadraticCostFunction(
     q=np.ones(sys.n),
@@ -49,11 +49,11 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 
 vi.uselookuptable = True
 vi.initialize()
-if load_data:
-    vi.load_data('car_vi')
+#if load_data:
+# vi.load_data('car_vi')
 vi.compute_steps(100, plot=True)
-if save_data:
-    vi.save_data('car_vi')
+#if save_data:
+vi.save_data('car_vi')
 
 vi.assign_interpol_controller()
 

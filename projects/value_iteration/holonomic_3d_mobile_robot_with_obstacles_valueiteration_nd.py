@@ -15,7 +15,7 @@ from pyro.planning import valueiteration
 sys  = vehicle.Holonomic3DMobileRobotwithObstacles()
 
 # Discrete world 
-grid_sys = discretizer.GridDynamicSystem( sys , (51,51,21) , (3,3) )
+grid_sys = discretizer.GridDynamicSystem( sys , (41,41,21) , (3,3) )
 
 # Cost Function
 cf = costfunction.QuadraticCostFunction(
@@ -36,7 +36,7 @@ vi.plot_cost2go(4000)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_policy(1)
-vi.save_data('holonomic_3d__obstacles_vi')
+vi.save_data('holonomic_3d_obstacles_vi')
 
 # Closed loop
 cl_sys = vi.ctl + sys
