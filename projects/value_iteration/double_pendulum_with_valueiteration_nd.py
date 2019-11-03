@@ -25,7 +25,7 @@ qcf = costfunction.QuadraticCostFunction(
     np.zeros(sys.p)
 )
 
-qcf.xbar = np.array([ -3.14 , 0 ]) # target
+qcf.xbar = np.array([0,0,0,0]) # target
 qcf.INF  = 10000
 
 # VI algo
@@ -33,7 +33,7 @@ vi = valueiteration.ValueIteration_ND( grid_sys , qcf )
 
 vi.initialize()
 # vi.load_data('double_pendulum_vi')
-vi.compute_steps(200)
+vi.compute_steps(200, plot=False)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_cost2go()
@@ -43,7 +43,7 @@ vi.plot_cost2go()
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
 
 # Simulation and animation
-x0   = [0,0]
+x0   = [-3.14,0,0,0]
 tf   = 10
 sim = cl_sys.compute_trajectory(x0, tf, costfunc=qcf)
 cl_sys.get_plotter().plot(sim, 'xuj')

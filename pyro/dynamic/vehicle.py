@@ -313,77 +313,77 @@ class HolonomicMobileRobot( system.ContinuousDynamicSystem ):
 ##############################################################################
 #
 ##############################################################################
-        
+
 class HolonomicMobileRobotwithObstacles( HolonomicMobileRobot ):
-    """ 
-    
+    """
+
     dx   = u[0]
     dy   = u[1]
-    
+
     """
-    
+
     ############################
     def __init__(self):
         """ """
         # initialize standard params
         HolonomicMobileRobot.__init__(self)
-        
+
         # Labels
         self.name = 'Holonomic Mobile Robot with Obstacles'
 
         # State working range
         self.x_ub = np.array([ 10, 10])
         self.x_lb = np.array([-10,-10])
-        
+
         self.obstacles = [
                 [ (2,2),(4,10)],
                 [ (6,-8),(8,8)],
                 [ (-8,-8),(-1,8)]
                 ]
-        
+
     #############################
     def isavalidstate(self , x ):
         """ check if x is in the state domain """
-        
+
         ans = False
-        
+
         for i in range(self.n):
             ans = ans or ( x[i] < self.x_lb[i] )
             ans = ans or ( x[i] > self.x_ub[i] )
-        
+
         for obs in self.obstacles:
-            on_obs = (( x[0] > obs[0][0]) and  
-                      ( x[1] > obs[0][1]) and 
-                      ( x[0] < obs[1][0]) and 
+            on_obs = (( x[0] > obs[0][0]) and
+                      ( x[1] > obs[0][1]) and
+                      ( x[0] < obs[1][0]) and
                       ( x[1] < obs[1][1]) )
-                     
+
             ans = ans or on_obs
-            
+
         return not(ans)
-        
-       
+
+
     ###########################################################################
     def forward_kinematic_lines(self, q ):
-        """ 
-        Compute points p = [x;y;z] positions given config q 
+        """
+        Compute points p = [x;y;z] positions given config q
         ----------------------------------------------------
         - points of interest for ploting
-        
+
         Outpus:
         lines_pts = [] : a list of array (n_pts x 3) for each lines
-        
+
         """
-        
+
         lines_pts = [] # list of array (n_pts x 3) for each lines
-        
+
         ###########################
         # Vehicule
         ###########################
-            
+
         pts = np.zeros((4,3))
-        
+
         d = 0.2
-        
+
         pts[0,0] = q[0]+d
         pts[0,1] = q[1]+d
         pts[1,0] = q[0]+d
@@ -392,37 +392,273 @@ class HolonomicMobileRobotwithObstacles( HolonomicMobileRobot ):
         pts[2,1] = q[1]-d
         pts[3,0] = q[0]-d
         pts[3,1] = q[1]+d
-        
+
         lines_pts.append( pts )
-        
+
         ###########################
         # obstacles
         ###########################
-        
+
         for obs in self.obstacles:
-            
+
             pts = np.zeros((5,3))
-            
+
             pts[0,0] = obs[0][0]
             pts[0,1] = obs[0][1]
-            
+
             pts[1,0] = obs[0][0]
             pts[1,1] = obs[1][1]
-            
+
             pts[2,0] = obs[1][0]
             pts[2,1] = obs[1][1]
-            
+
             pts[3,0] = obs[1][0]
             pts[3,1] = obs[0][1]
-            
+
             pts[4,0] = obs[0][0]
             pts[4,1] = obs[0][1]
-            
+
             lines_pts.append( pts )
-            
-                
+
+
         return lines_pts
-    
+
+
+##############################################################################
+#
+##############################################################################
+
+class Holonomic3DMobileRobot(system.ContinuousDynamicSystem):
+    """
+
+    dx   = u[0]
+    dy   = u[1]
+
+    """
+
+    ############################
+    def __init__(self):
+        """ """
+
+        # Dimensions
+        self.n = 3
+        self.m = 2
+        self.p = 3
+
+        # initialize standard params
+        system.ContinuousDynamicSystem.__init__(self, self.n, self.m, self.p)
+
+        # Labels
+        self.name = 'Holonomic 3D Mobile Robot'
+        self.state_label = ['x', 'y', 'z']
+        self.input_label = ['vx', 'vy', 'vz']
+        self.output_label = ['x', 'y', 'z']
+
+        # Units
+        self.state_units = ['[m]', '[m]']
+        self.input_units = ['[m/sec]', '[m/sec]']
+        self.output_units = ['[m]', '[m]']
+
+        # State working range
+        self.x_ub = np.array([10, 10, 10])
+        self.x_lb = np.array([-10, -10, -10])
+
+    #############################
+    def f(self, x=np.zeros(3), u=np.zeros(2), t=0):
+        """
+        Continuous time foward dynamics evaluation
+
+        dx = f(x,u,t)
+
+        INPUTS
+        x  : state vector             n x 1
+        u  : control inputs vector    m x 1
+        t  : time                     1 x 1
+
+        OUPUTS
+        dx : state derivative vectror n x 1
+
+        """
+
+        dx = np.zeros(self.n)  # State derivative vector
+
+        dx[0] = u[0]
+        dx[1] = u[1]
+
+        return dx
+
+    ###########################################################################
+    # For graphical output
+    ###########################################################################
+
+    #############################
+    def xut2q(self, x, u, t):
+        """ compute config q """
+
+        q = x  # kinematic model : state = config space
+
+        return q
+
+    ###########################################################################
+    def forward_kinematic_domain(self, q):
+        """
+        """
+        l = 10
+
+        domain = [(-l, l),
+                  (-l, l),
+                  (-l, l)]  #
+
+        return domain
+
+    ###########################################################################
+    def forward_kinematic_lines(self, q):
+        """
+        Compute points p = [x;y;z] positions given config q
+        ----------------------------------------------------
+        - points of interest for ploting
+
+        Outpus:
+        lines_pts = [] : a list of array (n_pts x 3) for each lines
+
+        """
+
+        lines_pts = []  # list of array (n_pts x 3) for each lines
+
+        ###########################
+        # Top line
+        ###########################
+
+        pts = np.zeros((4, 3))
+
+        d = 0.2
+
+        pts[0, 0] = q[0] + d
+        pts[0, 1] = q[1] + d
+        pts[1, 0] = q[0] + d
+        pts[1, 1] = q[1] - d
+        pts[2, 0] = q[0] - d
+        pts[2, 1] = q[1] - d
+        pts[3, 0] = q[0] - d
+        pts[3, 1] = q[1] + d
+
+        lines_pts.append(pts)
+
+        return lines_pts
+
+##############################################################################
+#
+##############################################################################
+
+class Holonomic3DMobileRobotwithObstacles(Holonomic3DMobileRobot):
+    """
+
+    dx   = u[0]
+    dy   = u[1]
+
+    """
+
+    ############################
+    def __init__(self):
+        """ """
+        # initialize standard params
+        Holonomic3DMobileRobot.__init__(self)
+
+        # Labels
+        self.name = 'Holonomic 3D Mobile Robot with Obstacles'
+
+        # State working range
+        self.x_ub = np.array([ 10, 10, 10])
+        self.x_lb = np.array([-10,-10, -10])
+
+        self.obstacles = [
+                [ (2,2,6),(4,10,4)],
+                [ (6,-8,4),(8,8,4)],
+                [ (-8,-8,4),(-1,8,6)]
+                ]
+
+    #############################
+    def isavalidstate(self , x ):
+        """ check if x is in the state domain """
+
+        ans = False
+
+        for i in range(self.n):
+            ans = ans or ( x[i] < self.x_lb[i] )
+            ans = ans or ( x[i] > self.x_ub[i] )
+
+        for obs in self.obstacles:
+            on_obs = (( x[0] > obs[0][0]) and
+                      ( x[1] > obs[0][1]) and
+                      ( x[0] < obs[1][0]) and
+                      ( x[1] < obs[1][1]) )
+
+            ans = ans or on_obs
+
+        return not(ans)
+
+
+    ###########################################################################
+    def forward_kinematic_lines(self, q ):
+        """
+        Compute points p = [x;y;z] positions given config q
+        ----------------------------------------------------
+        - points of interest for ploting
+
+        Outpus:
+        lines_pts = [] : a list of array (n_pts x 3) for each lines
+
+        """
+
+        lines_pts = [] # list of array (n_pts x 3) for each lines
+
+        ###########################
+        # Vehicule
+        ###########################
+
+        pts = np.zeros((4,3))
+
+        d = 0.2
+
+        pts[0,0] = q[0]+d
+        pts[0,1] = q[1]+d
+        pts[1,0] = q[0]+d
+        pts[1,1] = q[1]-d
+        pts[2,0] = q[0]-d
+        pts[2,1] = q[1]-d
+        pts[3,0] = q[0]-d
+        pts[3,1] = q[1]+d
+
+        lines_pts.append( pts )
+
+        ###########################
+        # obstacles
+        ###########################
+
+        for obs in self.obstacles:
+
+            pts = np.zeros((5,3))
+
+            pts[0,0] = obs[0][0]
+            pts[0,1] = obs[0][1]
+
+            pts[1,0] = obs[0][0]
+            pts[1,1] = obs[1][1]
+
+            pts[2,0] = obs[1][0]
+            pts[2,1] = obs[1][1]
+
+            pts[3,0] = obs[1][0]
+            pts[3,1] = obs[0][1]
+
+            pts[4,0] = obs[0][0]
+            pts[4,1] = obs[0][1]
+
+            lines_pts.append( pts )
+
+
+        return lines_pts
+
     
 ##############################################################################
 #

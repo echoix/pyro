@@ -32,12 +32,12 @@ qcf.INF  = 10000
 vi = valueiteration.ValueIteration_ND( grid_sys , qcf )
 
 vi.initialize()
-# vi.load_data('simple_pendulum_vi')
-vi.compute_steps(200, plot=True)
+vi.load_data('simple_pendulum_vi')
+# vi.compute_steps(200, plot=True)
 vi.assign_interpol_controller()
 vi.plot_policy(0)
 vi.plot_cost2go()
-vi.save_data('simple_pendulum_vi')
+# vi.save_data('simple_pendulum_vi')
 
 #asign controller
 cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )

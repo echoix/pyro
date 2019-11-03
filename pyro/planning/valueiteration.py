@@ -676,6 +676,7 @@ class ValueIteration_ND:
         yname = self.sys.state_label[1] + ' ' + self.sys.state_units[1]
 
         policy_plot = self.u_policy_grid[i].copy()
+        print(policy_plot.shape)
 
         self.fig1 = plt.figure()
         self.fig1.canvas.set_window_title('Policy for u[%i]' % i)
@@ -687,14 +688,14 @@ class ValueIteration_ND:
         X = plot[:, 0]
         Y = plot[:, 1]
         Z = plot[:, 2]
-        self.ax1.plot_surface(X, Y, Z)
+        self.ax1.plot_trisurf(X, Y, Z)
 
         plt.axis([self.sys.x_lb[0],
               self.sys.x_ub[0],
               self.sys.x_lb[1],
               self.sys.x_ub[1]])
 
-        plt.colorbar()
+        # plt.colorbar()
 
         plt.draw()
         plt.pause(1)

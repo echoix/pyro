@@ -34,9 +34,9 @@ cf = costfunction.QuadraticCostFunction(
     v=np.zeros(sys.p)
 )
 
-cf.xbar = np.array( [5,5,0] ) # target
+cf.xbar = np.array( [1, 2, 0] ) # target
 cf.INF  = 1E4
-cf.EPS  = 0.2
+cf.EPS  = 0
 cf.R    = np.array([[0.01,0],[0,0]])
 
 # VI algo
@@ -46,7 +46,7 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 vi.uselookuptable = True
 vi.initialize()
 vi.load_data('bicycle_exp_vi')
-vi.compute_steps(100, plot=True)
+vi.compute_steps(1, plot=True)
 vi.save_data('bicycle_exp_vi')
 
 vi.assign_interpol_controller()
