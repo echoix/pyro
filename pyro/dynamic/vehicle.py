@@ -572,9 +572,9 @@ class Holonomic3DMobileRobotwithObstacles(Holonomic3DMobileRobot):
         self.x_lb = np.array([-10,-10, -10])
 
         self.obstacles = [
-                [ (2,2,6),(4,10,4)],
-                [ (6,-8,4),(8,8,4)],
-                [ (-8,-8,4),(-1,8,6)]
+                [ (2,2),(4,10)],
+                [ (6,-8),(8,8)],
+                [ (-8,-8),(-1,8)]
                 ]
 
     #############################
