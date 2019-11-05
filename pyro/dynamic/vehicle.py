@@ -455,9 +455,9 @@ class Holonomic3DMobileRobot(system.ContinuousDynamicSystem):
         self.output_label = ['x', 'y', 'z']
 
         # Units
-        self.state_units = ['[m]', '[m]']
-        self.input_units = ['[m/sec]', '[m/sec]']
-        self.output_units = ['[m]', '[m]']
+        self.state_units = ['[m]', '[m]', '[m]']
+        self.input_units = ['[m/sec]', '[m/sec]', '[m/sec]']
+        self.output_units = ['[m]', '[m]', '[m]']
 
         # State working range
         self.x_ub = np.array([10, 10, 10])

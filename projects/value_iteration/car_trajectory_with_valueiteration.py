@@ -26,11 +26,11 @@ sys  = vehicle.KinematicCarModelwithObstacles()
 sys.x_ub = np.array([+35,+3.5,+3])
 sys.x_lb = np.array([-5,-2,-3])
 
-sys.u_ub = np.array( [+2,+2.0] )
-sys.u_lb = np.array( [-2,-2.0] )
+sys.u_ub = np.array( [+2,+0.3] )
+sys.u_lb = np.array( [-2,-0.3] )
 
 # Discrete world
-grid_sys = discretizer.GridDynamicSystem( sys , (51, 51, 21) , (3,3) , 0.05 )
+grid_sys = discretizer.GridDynamicSystem( sys , (51, 51, 21) , (3,3) , 0.1 )
 # Cost Function
 cf = costfunction.QuadraticCostFunction(
     q=np.ones(sys.n),
@@ -39,9 +39,9 @@ cf = costfunction.QuadraticCostFunction(
 )
 
 cf.xbar = np.array( [30, 0, 0] ) # target
-cf.INF  = 1E4
-cf.EPS  = 1
-cf.R    = np.array([[0.01,0],[0,0]])
+cf.INF  = 1E8
+cf.EPS  = 0.1
+cf.R    = np.array([[0.1,0],[0,0]])
 
 # VI algo
 
@@ -50,14 +50,14 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 vi.uselookuptable = True
 vi.initialize()
 #if load_data:
-# vi.load_data('car_vi')
-vi.compute_steps(100, plot=True, maxJ=4000)
+# vi.load_data('car_vi_2')
+vi.compute_steps(100, plot=True, maxJ=6000)
 #if save_data:
-vi.save_data('car_vi')
+vi.save_data('car_vi_2')
 
 vi.assign_interpol_controller()
 
-vi.plot_cost2go(maxJ=4000)
+vi.plot_cost2go(maxJ=6000)
 vi.plot_policy(0)
 vi.plot_policy(1)
 
@@ -65,8 +65,8 @@ cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
 #
 ## Simulation and animation
 x0   = [0, 0 ,0]
-tf   = 5
+tf   = 10
 
-sim = cl_sys.compute_trajectory( x0 , tf , 10001 , 'euler')
+sim = cl_sys.compute_trajectory( x0 , tf , 10001)
 cl_sys.get_plotter().plot(sim, 'xu')
-cl_sys.get_animator().animate_simulation(sim, save=True, file_name='car')
+cl_sys.get_animator().animate_simulation(sim, save=True, file_name='car_2')
