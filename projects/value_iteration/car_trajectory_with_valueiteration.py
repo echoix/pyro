@@ -40,7 +40,7 @@ cf = costfunction.QuadraticCostFunction(
 
 cf.xbar = np.array( [30, 0, 0] ) # target
 cf.INF  = 1E8
-cf.EPS  = 0.1
+cf.EPS  = 0.2
 cf.R    = np.array([[0.1,0],[0,0]])
 
 # VI algo
@@ -50,10 +50,10 @@ vi = valueiteration.ValueIteration_ND( grid_sys , cf )
 vi.uselookuptable = True
 vi.initialize()
 #if load_data:
-# vi.load_data('car_vi_2')
-vi.compute_steps(100, plot=True, maxJ=6000)
+vi.load_data('car_vi_3')
+vi.compute_steps(200, plot=True, maxJ=6000)
 #if save_data:
-vi.save_data('car_vi_2')
+vi.save_data('car_vi_3')
 
 vi.assign_interpol_controller()
 
@@ -65,8 +65,8 @@ cl_sys = controller.ClosedLoopSystem( sys , vi.ctl )
 #
 ## Simulation and animation
 x0   = [0, 0 ,0]
-tf   = 10
+tf   = 20
 
-sim = cl_sys.compute_trajectory( x0 , tf , 10001)
+sim = cl_sys.compute_trajectory(x0, tf, 10001)
 cl_sys.get_plotter().plot(sim, 'xu')
-cl_sys.get_animator().animate_simulation(sim, save=True, file_name='car_2')
+cl_sys.get_animator().animate_simulation(sim, save=True, file_name='car_3')
